@@ -12,9 +12,9 @@
 
     <h2 class="status">On-line</h2>
 
-    <span>Hóspede: James</span>
+    <span class="hospede">Hóspede: James</span>
     <br>
-    <span>Apartamento: 703</span>
+    <span class="apartamento">Apartamento: 703</span>
 
   </div>
 
@@ -40,5 +40,10 @@
 
 .icon {
   font-size: 25px;
+}
+
+.hospede,
+.apartamento {
+  font-size: 20px;
 }
 </style>

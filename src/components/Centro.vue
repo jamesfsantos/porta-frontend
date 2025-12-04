@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 
+
 </script>
 
 <template>
+
+
   <div class="centro">
     <div class="data-horario ">
       <div class="data">
@@ -11,33 +14,32 @@ import Button from 'primevue/button';
         <span class="dias">15/11/2025 a 15/12/2025</span>
       </div>
       <div class="horario">
-        <span>Entrada: apos 13:00</span><br>
-        <span>Saida: ate 11:00</span>
+        <span class="horario">Entrada: após 13:00</span><br>
+        <span class="horario">Saida: até 11:00</span>
       </div>
     </div>
     <div class="botoes">
       <div class="portao mb-5">
-        <h1 class="t-botao">Portao de Veiculo: </h1>
+        <h1 class="t-botao">Portão de Veiculo: </h1>
         <Button label="Aberto" class="b-botao" />
       </div>
       <div class="portao mb-5">
-        <h1 class="t-botao">Portao de Pedestre: </h1>
+        <h1 class="t-botao">Portão de Pedestre: </h1>
         <Button label="Aberto" class="b-botao" />
       </div>
       <div class="portao mb-5">
-        <h1 class="t-botao">Portao do Apartamento: </h1>
+        <h1 class="t-botao">Portão do Apartamento: </h1>
         <Button label="Aberto" class="b-botao" />
       </div>
     </div>
   </div>
 
+
+
+
 </template>
 
 <style scoped>
-.centro {
-  /* border: 1px solid red; */
-}
-
 .data-horario {
   display: flex;
   justify-content: space-between;
@@ -72,7 +74,8 @@ import Button from 'primevue/button';
   color: black;
 }
 
-.t-data {
+.t-data,
+.horario {
   font-size: 20px;
 }
 </style>
