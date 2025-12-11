@@ -1,5 +1,5 @@
 import HomeView from '@/views/HomeView.vue'
-import ReservaView from '@/views/reservaView.vue'
+import ReservaView from '@/views/ReservaView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -12,7 +12,7 @@ const router = createRouter({
 
     },
     {
-        path: '/reserva/:codigoReserva',
+        path: '/reserva/:informacoesReserva',
         name: 'Reserva',
         component: ReservaView
 
