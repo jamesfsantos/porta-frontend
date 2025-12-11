@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Topo from './components/Topo.vue'
-import Centro from './components/Centro.vue'
 </script>
 
 <template>
@@ -14,14 +13,12 @@ import Centro from './components/Centro.vue'
     </div>
 
 
-    <div class="row ">
-      <div class="col-md-1 "></div>
-
-      <div class="col-md-10">
-        <Centro />
+    <div class="row">
+      <div class="col-10 col-offset-1">
+         <router-view/>
       </div>
 
-      <div class="col-md-1 "></div>
+
     </div>
   </div>
 </template>
