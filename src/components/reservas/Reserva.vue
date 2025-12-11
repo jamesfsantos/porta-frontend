@@ -1,6 +1,12 @@
 <script setup lang="ts">
+// import type { ReservaType } from '@/models/types/reserva.type';
+import { getDistanceFromLatLonInKm } from '../../utils/coordenadasUtils'
 import Button from 'primevue/button'
 import { ref, onMounted } from 'vue'
+
+const achouReserva = ref(false);
+
+
 
 const options = {
   maximumAge: 1000,
@@ -8,28 +14,13 @@ const options = {
   timeout: 15000,
 }
 
-const error = (err) => {
+const error = (err: any) => {
   console.log(err)
 }
 
 const coordenadaReferencia = ref({ latitude: -23.499897, longitude: -46.724204 })
 
-function getDistanceFromLatLonInKm(position1, position2): number {
-  const deg2rad = function (deg) {
-      return deg * (Math.PI / 180)
-    },
-    R = 6371,
-    dLat = deg2rad(position2.latitude - position1.latitude),
-    dLng = deg2rad(position2.longitude - position1.longitude),
-    a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(position1.latitude)) *
-        Math.cos(deg2rad(position1.latitude)) *
-        Math.sin(dLng / 2) *
-        Math.sin(dLng / 2),
-    c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return parseFloat((R * c * 1000).toFixed())
-}
+
 
 const botaoHabilitado = ref(false)
 
@@ -47,29 +38,38 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="centro">
-    <div class="data-horario">
-      <div class="data">
-        <span class="t-data">Data:</span><br />
-        <span class="dias">15/11/2025 a 15/12/2025</span>
+
+  <div v-if="!achouReserva">
+    <h1 class="text-center alert alert-info alert-block">Buscando informações da reserva...</h1>
+  </div>
+
+  <div class="reserva-localizada" v-if="achouReserva">
+    <div class="centro">
+
+
+      <div class="data-horario">
+        <div class="data">
+          <span class="t-data">Data:</span><br />
+          <span class="dias">15/11/2025 a 15/12/2025</span>
+        </div>
+        <div class="horario">
+          <span class="horario">Entrada: após 13:00</span><br />
+          <span class="horario">Saida: até 11:00</span>
+        </div>
       </div>
-      <div class="horario">
-        <span class="horario">Entrada: após 13:00</span><br />
-        <span class="horario">Saida: até 11:00</span>
-      </div>
-    </div>
-    <div class="botoes">
-      <div class="portao mb-5">
-        <h1 class="t-botao">Portão de Veiculo:</h1>
-        <Button label="Aberto" class="b-botao" :disabled="!botaoHabilitado" />
-      </div>
-      <div class="portao mb-5">
-        <h1 class="t-botao">Portão de Pedestre:</h1>
-        <Button label="Aberto" class="b-botao" />
-      </div>
-      <div class="portao mb-5">
-        <h1 class="t-botao">Portão do Apartamento:</h1>
-        <Button label="Aberto" class="b-botao" />
+      <div class="botoes">
+        <div class="portao mb-5">
+          <h1 class="t-botao">Portão de Veiculo:</h1>
+          <Button label="Aberto" class="b-botao" :disabled="!botaoHabilitado" />
+        </div>
+        <div class="portao mb-5">
+          <h1 class="t-botao">Portão de Pedestre:</h1>
+          <Button label="Aberto" class="b-botao" />
+        </div>
+        <div class="portao mb-5">
+          <h1 class="t-botao">Portão do Apartamento:</h1>
+          <Button label="Aberto" class="b-botao" />
+        </div>
       </div>
     </div>
   </div>

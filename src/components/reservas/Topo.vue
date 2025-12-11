@@ -1,5 +1,9 @@
 <script setup lang="ts">
+type TopoProps = {
+  nomeHospede: string
+}
 
+const props = defineProps<TopoProps>()
 </script>
 
 <template>
@@ -12,7 +16,7 @@
 
     <h2 class="status">On-line</h2>
 
-    <span class="hospede">Hóspede: James</span>
+    <span class="hospede">Hóspede: {{ props.nomeHospede }}</span>
     <br>
     <span class="apartamento">Apartamento: 703</span>
 
