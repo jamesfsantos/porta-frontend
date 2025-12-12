@@ -53,7 +53,7 @@ onMounted(() => {
       </div>
       <div class="col-md-1"></div>
     </div>
-    <Reserva />
+    <Reserva :reserva-id="objReserva.reservaId"/>
   </div>
 
 

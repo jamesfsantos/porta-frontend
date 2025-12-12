@@ -1,11 +1,19 @@
 <script setup lang="ts">
 // import type { ReservaType } from '@/models/types/reserva.type';
+import type ReservaModel from '@/models/reservaModel';
 import { getDistanceFromLatLonInKm } from '../../utils/coordenadasUtils'
 import Button from 'primevue/button'
 import { ref, onMounted } from 'vue'
+import reservaService from '@/services/reservaService';
+
+const props = defineProps(['reservaId']);
+
 
 const achouReserva = ref(false);
 
+const error = (err: any) => {
+  console.log(err)
+}
 
 
 const options = {
@@ -14,15 +22,14 @@ const options = {
   timeout: 15000,
 }
 
-const error = (err: any) => {
-  console.log(err)
-}
-
 const coordenadaReferencia = ref({ latitude: -23.499897, longitude: -46.724204 })
-
-
-
 const botaoHabilitado = ref(false)
+const reserva = ref<ReservaModel>()
+
+
+async function buscarReservaAsync(reservaId:string){
+    reserva.value = await reservaService.obterReserva(reservaId);
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function verificarProximidade(posicao: any) {
@@ -32,7 +39,10 @@ function verificarProximidade(posicao: any) {
   botaoHabilitado.value = distancia <= 50
 }
 
-onMounted(() => {
+onMounted(async () => {
+  if(props.reservaId)
+    await buscarReservaAsync(props.reservaId);
+
   navigator.geolocation.watchPosition(verificarProximidade, error, options)
 })
 </script>
