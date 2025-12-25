@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import { useReservaStore } from '@/stores/reserva';
+import { ref } from 'vue';
+
 type TopoProps = {
   nomeHospede: string
 }
 
+const store = useReservaStore();
+
 const props = defineProps<TopoProps>()
+const nomeHospede = ref(store.reserva?.hospede.nome ??  props.nomeHospede);
 </script>
 
 <template>
@@ -16,7 +22,7 @@ const props = defineProps<TopoProps>()
 
     <h2 class="status">On-line</h2>
 
-    <span class="hospede">Hóspede: {{ props.nomeHospede }}</span>
+    <span class="hospede">Hóspede: {{ nomeHospede}}</span>
     <br>
     <span class="apartamento">Apartamento: 703</span>
 

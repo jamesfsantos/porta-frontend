@@ -1,10 +1,12 @@
-import DispositivoModel from "./dispositivoModel";
-import HospedeModel from "./hospedeModel";
+import type DispositivoModel from "./dispositivoModel";
+import type  HospedeModel from "./hospedeModel";
+import type UnidadeModel from "./unidadeModel";
 
 export default interface ReservaModel {
   dispositivos: DispositivoModel[],
   id: string,
   hospede: HospedeModel,
-  dataInicio: Date,
-  dataFim: Date,
+  unidade:UnidadeModel,
+  dataEntrada: Date,
+  dataSaida: Date,
 };

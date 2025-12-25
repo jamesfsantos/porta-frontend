@@ -1,15 +1,21 @@
 <script setup lang="ts">
 // import type { ReservaType } from '@/models/types/reserva.type';
-import type ReservaModel from '@/models/reservaModel';
 import { getDistanceFromLatLonInKm } from '../../utils/coordenadasUtils'
 import Button from 'primevue/button'
 import { ref, onMounted } from 'vue'
-import reservaService from '@/services/reservaService';
+import { useReservaStore } from '@/stores/reserva'
+import type DispositivoModel from '@/models/dispositivoModel';
+import type CoordenadaModel from '@/models/coordenadaModel';
+import acionamentoService from '@/services/acionamentoService';
+import utils from '@/utils/index'
 
-const props = defineProps(['reservaId']);
 
+//ter uma rotina para se comunicar com o dispositivo e verificar o real estado dele. (aberto ou fechado)
+//ter que ser feito via websocket
+const store = useReservaStore();
+const modoDebug= true;
 
-const achouReserva = ref(false);
+const reservaId = ref(store.reserva?.id?? '')
 
 const error = (err: any) => {
   console.log(err)
@@ -22,45 +28,65 @@ const options = {
   timeout: 15000,
 }
 
-const coordenadaReferencia = ref({ latitude: -23.499897, longitude: -46.724204 })
+// const coordenadaReferencia = ref({ latitude: -23.499897, longitude: -46.724204 })
+const coordenadaHospede = ref<CoordenadaModel>()
 const botaoHabilitado = ref(false)
-const reserva = ref<ReservaModel>()
 
 
-async function buscarReservaAsync(reservaId:string){
-    reserva.value = await reservaService.obterReserva(reservaId);
+function handlePosicaoHospede(posicao: any) {
+  coordenadaHospede.value = posicao.coords as CoordenadaModel;
+  console.log('coordenadaHospede=>', coordenadaHospede.value)
+
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function verificarProximidade(posicao: any) {
-  console.log('pos', posicao)
-  const distancia = getDistanceFromLatLonInKm(posicao.coords, coordenadaReferencia.value)
-  console.log('Distancia: ', distancia) // Exemplo de saída: "14567"
-  botaoHabilitado.value = distancia <= 50
+function estaProximoDispositivo(dispositivo: DispositivoModel) {
+
+  const { coordenadas } = dispositivo;
+  if (coordenadas != null && coordenadaHospede.value != null) {
+    const distancia = getDistanceFromLatLonInKm(coordenadas, coordenadaHospede?.value)
+    dispositivo.distanciaCalculada = distancia;
+    return  (distancia <= 100) // pegar o valor do 100 do dispositivo
+  }
+
+  return false;
+
 }
 
-onMounted(async () => {
-  if(props.reservaId)
-    await buscarReservaAsync(props.reservaId);
+async function handleClickBtnDispositivo(dispositivo: DispositivoModel) {
+  const {condominioId, id:dispositivoId, token:tokenDispositivo} = dispositivo;
+  const resul = await acionamentoService.acionarDispositivo({
+    condominioId,
+    dispositivoId,
+    reservaId: reservaId.value,
+    tokenDispositivo,
+    
 
-  navigator.geolocation.watchPosition(verificarProximidade, error, options)
+  })
+  console.log('Dispo=>', dispositivo);
+}
+
+onMounted(() => {
+  navigator.geolocation.watchPosition(handlePosicaoHospede, error, options);
+  console.log('reserva do store', store.reserva)
+
 })
 </script>
 
 <template>
 
-  <div v-if="!achouReserva">
+  <div v-if="!store.achouReserva">
     <h1 class="text-center alert alert-info alert-block">Buscando informações da reserva...</h1>
   </div>
 
-  <div class="reserva-localizada" v-if="achouReserva">
+  <div class="reserva-localizada" v-if="store.achouReserva">
     <div class="centro">
 
 
       <div class="data-horario">
         <div class="data">
-          <span class="t-data">Data:</span><br />
-          <span class="dias">15/11/2025 a 15/12/2025</span>
+          <span class="t-data">Período de: </span>
+          <span class="dias">{{ utils.dateTimeUtils.toDatePtBR(store.reserva?.dataEntrada) }} até {{ utils.dateTimeUtils.toDatePtBR(store.reserva?.dataSaida) }}</span>
         </div>
         <div class="horario">
           <span class="horario">Entrada: após 13:00</span><br />
@@ -68,18 +94,33 @@ onMounted(async () => {
         </div>
       </div>
       <div class="botoes">
-        <div class="portao mb-5">
-          <h1 class="t-botao">Portão de Veiculo:</h1>
-          <Button label="Aberto" class="b-botao" :disabled="!botaoHabilitado" />
+        <div class="portao mb-5" v-for="dispositivo in store.reserva?.dispositivos" :key="dispositivo.id">
+
+          <div v-if="modoDebug">
+            <h4>Modo debug ativo</h4>
+            <pre class="alert alert-block alert-warning">
+               {{ dispositivo }} <br />
+            </pre>
+            <h5>Store</h5>
+             <pre class="alert alert-block alert-warning">
+            {{ store.reserva }}
+             </pre>
+          </div>
+
+          <Button v-if="dispositivo.permiteAcionamentoRemoto"
+            @click="() => handleClickBtnDispositivo(dispositivo)"
+            :label="dispositivo.nome" class="b-botao"
+            :disabled="!estaProximoDispositivo(dispositivo)" />
+
         </div>
-        <div class="portao mb-5">
+        <!-- <div class="portao mb-5">
           <h1 class="t-botao">Portão de Pedestre:</h1>
           <Button label="Aberto" class="b-botao" />
         </div>
         <div class="portao mb-5">
           <h1 class="t-botao">Portão do Apartamento:</h1>
           <Button label="Aberto" class="b-botao" />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

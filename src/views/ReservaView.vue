@@ -5,14 +5,32 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import utils from '../utils'
 import type ReservaType from "@/models/types/ReservaType"
+import reservaService from '@/services/reservaService';
+import { useReservaStore } from '@/stores/reserva'
 
 
+const store = useReservaStore();
 const route = useRoute();
 const reservaEncontrada = ref(false);
 const objReserva = ref<ReservaType>(null)
 
 const { base64Util } = utils;
-onMounted(() => {
+
+async function buscarReservaAsync(reservaId: string) {
+
+  const result = await reservaService.obterReservaAsync(reservaId);
+
+  if (!result.sucesso) {
+    alert(result.erros.join('\n'));
+    return
+  }
+  //add no store
+  store.setReserva(result.data!);
+
+
+}
+
+onMounted(async () => {
 
   //base endecode teste: ewoibm9tZSI6Ik1hcmNpbyIsCiJyZXNlcnZhSWQiOiJjMjBkNTBkMC05NGNjLTQ1ZWEtYjhhOS0xNTQyY2JkYjAxYjAiCn0=
 
@@ -23,7 +41,11 @@ onMounted(() => {
     vira codificicado em base64
     sera necessario decodificar para extrair os dados
   */
-  console.log(utils)
+
+
+
+
+
   const { informacoesReserva } = route.params;
   reservaEncontrada.value = (informacoesReserva != null);
 
@@ -31,6 +53,9 @@ onMounted(() => {
     objReserva.value = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string);
     //Buscar informações da reserva na api
     console.log('Buscando informações da reserva para hospedagem de: ', objReserva.value.nome)
+    const { reservaId } = objReserva.value;
+    if (reservaId)
+      await buscarReservaAsync(reservaId)
   }
 
 });
@@ -53,7 +78,7 @@ onMounted(() => {
       </div>
       <div class="col-md-1"></div>
     </div>
-    <Reserva :reserva-id="objReserva.reservaId"/>
+    <Reserva />
   </div>
 
 
