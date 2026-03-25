@@ -5,6 +5,7 @@ import type UnidadeModel from "./unidadeModel";
 export default interface ReservaModel {
   dispositivos: DispositivoModel[],
   id: string,
+  codigo:string,
   hospede: HospedeModel,
   unidade:UnidadeModel,
   dataEntrada: Date,

@@ -1,9 +1,11 @@
 import type { Resultado } from '@/models/types/resultado.type';
 import axios, { AxiosError, type AxiosInstance } from 'axios';
 
+
+const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT || 'http://localhost:5288/api/';
+
 const apiClient: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:5288/api/',
-  timeout: 1000,
+  baseURL: API_ENDPOINT,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -32,6 +34,9 @@ async function post<T>(endpoint:string, data:T) : Promise<Resultado<T | null>>
 }
 
 async function get<T>(endpoint: string): Promise<Resultado<T | null>> {
+
+
+
   try {
     const response = await apiClient.get<T>(endpoint);
     return {

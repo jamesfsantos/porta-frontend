@@ -4,15 +4,15 @@ import Topo from "@/components/reservas/Topo.vue"
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import utils from '../utils'
-import type ReservaType from "@/models/types/ReservaType"
 import reservaService from '@/services/reservaService';
 import { useReservaStore } from '@/stores/reserva'
+import type { ReservaType } from '@/models/types/reserva.type';
 
 
 const store = useReservaStore();
 const route = useRoute();
 const reservaEncontrada = ref(false);
-const objReserva = ref<ReservaType>(null)
+const objReserva = ref<ReservaType>({ nome: "", reservaId: "" })
 
 const { base64Util } = utils;
 
@@ -42,17 +42,18 @@ onMounted(async () => {
     sera necessario decodificar para extrair os dados
   */
 
-
-
-
-
   const { informacoesReserva } = route.params;
+
   reservaEncontrada.value = (informacoesReserva != null);
+  console.log('init busca por resrevas');
 
   if (informacoesReserva) {
-    objReserva.value = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string);
+    const reservaDecoded = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string);
+    if (reservaDecoded == null) return;
+
+    objReserva.value = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string) as ReservaType;
     //Buscar informações da reserva na api
-    console.log('Buscando informações da reserva para hospedagem de: ', objReserva.value.nome)
+    console.log('Buscando informações da reserva para hospedagem de: ', )
     const { reservaId } = objReserva.value;
     if (reservaId)
       await buscarReservaAsync(reservaId)

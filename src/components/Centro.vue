@@ -8,14 +8,14 @@ const options = {
   timeout: 15000,
 }
 
-const error = (err) => {
+const error = (err:any) => {
   console.log(err)
 }
 
 const coordenadaReferencia = ref({ latitude: -23.499897, longitude: -46.724204 })
 
-function getDistanceFromLatLonInKm(position1, position2): number {
-  const deg2rad = function (deg) {
+function getDistanceFromLatLonInKm(position1:any, position2:any): number {
+  const deg2rad = function (deg:number) {
       return deg * (Math.PI / 180)
     },
     R = 6371,

@@ -13,9 +13,10 @@ import utils from '@/utils/index'
 //ter uma rotina para se comunicar com o dispositivo e verificar o real estado dele. (aberto ou fechado)
 //ter que ser feito via websocket
 const store = useReservaStore();
-const modoDebug= true;
+const modoDebug= false;
 
-const reservaId = ref(store.reserva?.id?? '')
+const reservaId = ref(store.reserva?.id?? '');
+
 
 const error = (err: any) => {
   console.log(err)
@@ -58,9 +59,9 @@ async function handleClickBtnDispositivo(dispositivo: DispositivoModel) {
   const resul = await acionamentoService.acionarDispositivo({
     condominioId,
     dispositivoId,
-    reservaId: reservaId.value,
+    reservaId: store.reserva!.id,
     tokenDispositivo,
-    
+
 
   })
   console.log('Dispo=>', dispositivo);
@@ -76,7 +77,7 @@ onMounted(() => {
 <template>
 
   <div v-if="!store.achouReserva">
-    <h1 class="text-center alert alert-info alert-block">Buscando informações da reserva...</h1>
+    <h5 class="text-center alert alert-info alert-block">Buscando informações da reserva...</h5>
   </div>
 
   <div class="reserva-localizada" v-if="store.achouReserva">
@@ -87,12 +88,20 @@ onMounted(() => {
         <div class="data">
           <span class="t-data">Período de: </span>
           <span class="dias">{{ utils.dateTimeUtils.toDatePtBR(store.reserva?.dataEntrada) }} até {{ utils.dateTimeUtils.toDatePtBR(store.reserva?.dataSaida) }}</span>
+          <div class="row">
+        <div class="col">
+          <span class="t-data">Senha de acesso:</span>
+            <span class="t-data badge text-bg-success p-1">&nbsp;{{ store.reserva && store.reserva.codigo }}</span>
+
+        </div>
+      </div>
         </div>
         <div class="horario">
           <span class="horario">Entrada: após 13:00</span><br />
           <span class="horario">Saida: até 11:00</span>
         </div>
       </div>
+
       <div class="botoes">
         <div class="portao mb-5" v-for="dispositivo in store.reserva?.dispositivos" :key="dispositivo.id">
 
@@ -113,14 +122,7 @@ onMounted(() => {
             :disabled="!estaProximoDispositivo(dispositivo)" />
 
         </div>
-        <!-- <div class="portao mb-5">
-          <h1 class="t-botao">Portão de Pedestre:</h1>
-          <Button label="Aberto" class="b-botao" />
-        </div>
-        <div class="portao mb-5">
-          <h1 class="t-botao">Portão do Apartamento:</h1>
-          <Button label="Aberto" class="b-botao" />
-        </div> -->
+
       </div>
     </div>
   </div>
