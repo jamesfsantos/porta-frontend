@@ -2,8 +2,8 @@ FROM node:lts-alpine3.23 AS build
 WORKDIR /app
 COPY . .
 ENV TZ="America/Sao_Paulo"
-ENV VITE_API_ENDPOINT="https://api.travacarrinho.com.br/api/"
-ENV VITE_REPORT_API_ENDPOINT="https://botreportapi.manja.tec.br/api/"
+#ENV VITE_API_ENDPOINT="https://api.travacarrinho.com.br/api/"
+#ENV VITE_REPORT_API_ENDPOINT="https://botreportapi.manja.tec.br/api/"
 RUN npm i
 RUN npm run build
 
