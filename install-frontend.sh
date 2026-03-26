@@ -2,7 +2,7 @@
 
 cd /apps/condo-kitnet/hospede-frontend
 
-git checkout portas-kitnet
+git checkout feature/portas-kitnet
 
 git pull
 
