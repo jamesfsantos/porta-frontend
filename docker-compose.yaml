@@ -1,6 +1,6 @@
 
 services:
-   hosped-front:
+   hospede-front:
       restart: always
       environment:
         - TZ=America/Sao_Paulo
