@@ -12,7 +12,7 @@ import type { ReservaType } from '@/models/types/reserva.type';
 const store = useReservaStore();
 const route = useRoute();
 const reservaEncontrada = ref(false);
-const objReserva = ref<ReservaType>({ nome: "", reservaId: "" })
+const reserva = ref<ReservaType>({ nome: "", reservaId: "", apartamento:"" })
 
 const { base64Util } = utils;
 
@@ -51,10 +51,10 @@ onMounted(async () => {
     const reservaDecoded = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string);
     if (reservaDecoded == null) return;
 
-    objReserva.value = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string) as ReservaType;
+    reserva.value = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string) as ReservaType;
     //Buscar informações da reserva na api
     console.log('Buscando informações da reserva para hospedagem de: ', )
-    const { reservaId } = objReserva.value;
+    const { reservaId } = reserva.value;
     if (reservaId)
       await buscarReservaAsync(reservaId)
   }
@@ -75,7 +75,7 @@ onMounted(async () => {
     <div class="row">
       <div class="col-md-1 "></div>
       <div class="col-md-10">
-        <Topo :nome-hospede="objReserva.nome" />
+        <Topo :nome-hospede="reserva.nome" :apartamento="reserva.apartamento" />
       </div>
       <div class="col-md-1"></div>
     </div>

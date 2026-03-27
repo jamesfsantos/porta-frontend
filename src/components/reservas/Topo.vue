@@ -3,7 +3,8 @@ import { useReservaStore } from '@/stores/reserva';
 import { ref } from 'vue';
 
 type TopoProps = {
-  nomeHospede: string
+  nomeHospede: string,
+  apartamento:string
 }
 
 const store = useReservaStore();
@@ -24,7 +25,7 @@ const nomeHospede = ref(store.reserva?.hospede.nome ??  props.nomeHospede);
 
     <span class="hospede">Hóspede: {{ nomeHospede}}</span>
     <br>
-    <span class="apartamento">Apartamento: 703</span>
+    <span class="apartamento">Apartamento: {{ props.apartamento }}</span>
 
   </div>
 

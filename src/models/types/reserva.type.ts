@@ -1,4 +1,5 @@
 export type ReservaType = {
   reservaId:string,
-  nome:string
+  nome:string;
+  apartamento:string
 }
