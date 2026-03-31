@@ -55,16 +55,17 @@ function estaProximoDispositivo(dispositivo: DispositivoModel) {
 }
 
 async function handleClickBtnDispositivo(dispositivo: DispositivoModel) {
+
+  const estaProximo = estaProximoDispositivo(dispositivo);
+  if(!estaProximo) return;
   const {condominioId, id:dispositivoId, token:tokenDispositivo} = dispositivo;
   const resul = await acionamentoService.acionarDispositivo({
     condominioId,
     dispositivoId,
     reservaId: store.reserva!.id,
     tokenDispositivo,
-
-
   })
-  console.log('Dispo=>', dispositivo);
+
 }
 
 onMounted(() => {
@@ -90,15 +91,15 @@ onMounted(() => {
           <span class="dias">{{ utils.dateTimeUtils.toDatePtBR(store.reserva?.dataEntrada) }} até {{ utils.dateTimeUtils.toDatePtBR(store.reserva?.dataSaida) }}</span>
           <div class="row">
         <div class="col">
-          <span class="t-data">Senha de acesso:</span>
+          <span class="t-data">Senha de acesso:&nbsp;</span>
             <span class="t-data badge text-bg-success p-1">&nbsp;{{ store.reserva && store.reserva.codigo }}</span>
 
         </div>
       </div>
         </div>
         <div class="horario">
-          <span class="horario">Entrada: após 13:00</span><br />
-          <span class="horario">Saida: até 11:00</span>
+          <span class="horario">Entrada: Após 13:00</span><br />
+          <span class="horario">Saida:    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Até 11:00</span>
         </div>
       </div>
 
@@ -116,7 +117,7 @@ onMounted(() => {
              </pre>
           </div>
 
-          <Button v-if="dispositivo.permiteAcionamentoRemoto"
+          <Button v-if="dispositivo.permiteAcionamentoRemoto && estaProximoDispositivo(dispositivo)"
             @click="() => handleClickBtnDispositivo(dispositivo)"
             :label="dispositivo.nome" class="b-botao"
             :disabled="!estaProximoDispositivo(dispositivo)" />

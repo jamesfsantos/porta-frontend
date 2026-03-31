@@ -2,6 +2,12 @@
 import Button from 'primevue/button'
 import { ref, onMounted } from 'vue'
 
+type coords = {
+  latitude:number,
+  longitude:number
+}
+
+
 const options = {
   maximumAge: 1000,
   enableHighAccuracy: false,
@@ -12,9 +18,10 @@ const error = (err:any) => {
   console.log(err)
 }
 
+
 const coordenadaReferencia = ref({ latitude: -23.499897, longitude: -46.724204 })
 
-function getDistanceFromLatLonInKm(position1:any, position2:any): number {
+function getDistanceFromLatLonInKm(position1:coords, position2:coords): number {
   const deg2rad = function (deg:number) {
       return deg * (Math.PI / 180)
     },
@@ -35,7 +42,6 @@ const botaoHabilitado = ref(false)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function verificarProximidade(posicao: any) {
-  console.log('pos', posicao)
   const distancia = getDistanceFromLatLonInKm(posicao.coords, coordenadaReferencia.value)
   console.log('Distancia: ', distancia) // Exemplo de saída: "14567"
   botaoHabilitado.value = distancia <= 50
