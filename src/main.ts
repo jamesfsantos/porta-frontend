@@ -14,8 +14,8 @@ import { createBootstrap } from 'bootstrap-vue-next'
 
 import 'primeicons/primeicons.css'
 import 'primeflex/primeflex.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
+// import 'bootstrap/dist/css/bootstrap.min.css'
+// import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
 
 library.add(faBell, faBars)
 
@@ -34,7 +34,7 @@ app.use(PrimeVue, {
   },
 })
 
-app.use(createBootstrap())
+// app.use(createBootstrap())
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 

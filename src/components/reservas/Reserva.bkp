@@ -1,0 +1,170 @@
+<script setup lang="ts">
+
+// import type { ReservaType } from '@/models/types/reserva.type';
+import { getDistanceFromLatLonInKm } from '../../utils/coordenadasUtils'
+import Button from 'primevue/button'
+import { ref, onMounted } from 'vue'
+import Message from 'primevue/message';
+import { useReservaStore } from '@/stores/reserva'
+import type DispositivoModel from '@/models/dispositivoModel';
+import type CoordenadaModel from '@/models/coordenadaModel';
+import acionamentoService from '@/services/acionamentoService';
+import utils from '@/utils/index'
+import Badge from 'primevue/badge';
+
+
+//ter uma rotina para se comunicar com o dispositivo e verificar o real estado dele. (aberto ou fechado)
+//ter que ser feito via websocket
+const store = useReservaStore();
+const modoDebug = false;
+const dispositivoEstaProximo = ref(false);
+const distanciaDispositivoHospedagem = ref(0);
+const reservaId = ref(store.reserva?.id ?? '');
+
+
+const error = (err: any) => {
+  console.log(err)
+}
+
+
+const options = {
+  maximumAge: 1000,
+  enableHighAccuracy: false,
+  timeout: 15000,
+}
+
+
+const coordenadaHospede = ref<CoordenadaModel>()
+const botaoHabilitado = ref(false)
+
+
+function handlePosicaoHospede(posicao: any) {
+  coordenadaHospede.value = posicao.coords as CoordenadaModel;
+  console.log('coordenadaHospede=>', coordenadaHospede.value)
+
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function estaProximoDispositivo(dispositivo: DispositivoModel) {
+
+
+  const { coordenadas } = dispositivo;
+  if (coordenadas != null && coordenadaHospede.value != null) {
+    const distancia = getDistanceFromLatLonInKm(coordenadas, coordenadaHospede?.value)
+    dispositivo.distanciaCalculada = distancia;
+    distanciaDispositivoHospedagem.value = distancia;
+    dispositivoEstaProximo.value = (distancia <= 100) // pegar o valor do 100 do dispositivo
+  }
+
+  return true;
+  //return dispositivoEstaProximo.value;
+
+}
+
+async function handleClickBtnDispositivo(dispositivo: DispositivoModel) {
+
+  const estaProximo = estaProximoDispositivo(dispositivo);
+  if (!estaProximo) return;
+  const { condominioId, id: dispositivoId, token: tokenDispositivo } = dispositivo;
+  const resul = await acionamentoService.acionarDispositivo({
+    condominioId,
+    dispositivoId,
+    reservaId: store.reserva!.id,
+    tokenDispositivo,
+  })
+
+}
+
+onMounted(() => {
+  navigator.geolocation.watchPosition(handlePosicaoHospede, error, options);
+  console.log('reserva do store', store.reserva)
+
+})
+</script>
+
+<template>
+
+  <div v-if="!store.achouReserva">
+    <Message severity="info" class="text-center">Buscando informações da reserva...</Message>
+  </div>
+
+  <div class="reserva-localizada" v-if="store.achouReserva">
+    <div class="centro">
+
+
+
+ <div class="grid grid-cols-1 grid-rows-3 gap-4">
+
+
+ <div class="col-start-1">1</div>
+    <div class="col-start-1 row-start-2">2</div>
+    <div class="col-start-1 row-start-3">3</div>
+
+        <div class="">
+          <span class="t-data">Período de: </span>
+          <span class="dias">{{ utils.dateTimeUtils.toDatePtBR(store.reserva?.dataEntrada) }} até {{
+            utils.dateTimeUtils.toDatePtBR(store.reserva?.dataSaida) }}</span>
+        </div>
+        <div class="">
+          <span class="horario">Entrada: Após 13:00</span><br />
+          <span class="horario">Saida: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Até 11:00</span>
+        </div>
+
+        <div>
+          <span class="t-data">Senha de acesso:&nbsp;</span>
+          <Badge severity="success">&nbsp;{{ store.reserva && store.reserva.codigo }}</Badge>
+        </div>
+      </div>
+
+      <div class="botoes">
+        <div class="portao mb-5" v-for="dispositivo in store.reserva?.dispositivos" :key="dispositivo.id">
+
+
+
+          <Button v-if="dispositivo.permiteAcionamentoRemoto && estaProximoDispositivo(dispositivo)"
+            @click="() => handleClickBtnDispositivo(dispositivo)" :label="dispositivo.nome" class="b-botao"
+            :disabled="!estaProximoDispositivo(dispositivo)" />
+
+        </div>
+
+      </div>
+
+      <Message v-if="!dispositivoEstaProximo" severity="error" class="align-center">
+        Você encontra-se fora do raio de 100 metros da hospedagem, a função de abertura só será ativa dentro deste
+      </Message>
+      <br />
+      <Message severity="warn" v-if="!dispositivoEstaProximo">
+        Distancia calculada: {{ distanciaDispositivoHospedagem }}
+      </Message>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.data-horario {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin: 10px 5px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  align-items: center;
+}
+
+
+
+.portao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+.b-botao {
+  width: 20rem;
+  height: 4rem;
+  font-size: 14pt;
+  color: black;
+}
+</style>

@@ -3,5 +3,7 @@ export type AcionamentoType = {
   reservaId:string;
   dispositivoId:string;
   tokenDispositivo:string;
-  tipoAcionamento?:number
+  tipoAcionamento?:number;
+  nomeDispositivo:string;
+  estaProximo:boolean
 }

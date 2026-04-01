@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Reserva from '@/components/reservas/Reserva.vue';
-import Topo from "@/components/reservas/Topo.vue"
+import TopoReserva from "@/components/reservas/Topo.vue"
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import utils from '../utils'
@@ -12,7 +12,7 @@ import type { ReservaType } from '@/models/types/reserva.type';
 const store = useReservaStore();
 const route = useRoute();
 const reservaEncontrada = ref(false);
-const reserva = ref<ReservaType>({ nome: "", reservaId: "", apartamento:"" })
+const reserva = ref<ReservaType>({ nome: "", reservaId: "", apartamento: "" })
 
 const { base64Util } = utils;
 
@@ -53,7 +53,7 @@ onMounted(async () => {
 
     reserva.value = base64Util.decodeFromJson<ReservaType>(informacoesReserva as string) as ReservaType;
     //Buscar informações da reserva na api
-    console.log('Buscando informações da reserva para hospedagem de: ', )
+    console.log('Buscando informações da reserva para hospedagem de: ',)
     const { reservaId } = reserva.value;
     if (reservaId)
       await buscarReservaAsync(reservaId)
@@ -64,21 +64,13 @@ onMounted(async () => {
 
 <template>
 
-
-
   <div v-if="!reservaEncontrada">
     <p class="alert alert-block alert-warning">
       Reserva não localizada.
     </p>
   </div>
-  <div v-else>
-    <div class="row">
-      <div class="col-md-1 "></div>
-      <div class="col-md-10">
-        <Topo :nome-hospede="reserva.nome" :apartamento="reserva.apartamento" />
-      </div>
-      <div class="col-md-1"></div>
-    </div>
+  <div vv-else>
+    <TopoReserva :nome-hospede="reserva.nome" :apartamento="reserva.apartamento" />
     <Reserva />
   </div>
 
