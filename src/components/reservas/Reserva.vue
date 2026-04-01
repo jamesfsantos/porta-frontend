@@ -35,6 +35,7 @@ function handlePosicaoHospede(posicao: any) {
   //verificar coordenadas habilitadas
   coordenadaHospede.value = posicao.coords as CoordenadaModel;
   //coordenadaHospede.value = {latitude: -20.780711541231902, longitude:-51.7030286916198} as CoordenadaModel
+  console.log('coords -> hospede', posicao.coords);
 
 
 }
@@ -45,11 +46,14 @@ onMounted(() => {
   console.log('reserva:=>', store.reserva)
 
 })
-
+function handleAtualizarProximidade(estaProximo:boolean) {
+  console.log('atualizar proximidade', estaProximo);
+  dispositivoEstaProximo.value = estaProximo;
+}
 async function handleDispositivoEstaProximo(acionamento: AcionamentoType) {
+    console.log('acionamento', acionamento);
   dispositivoEstaProximo.value = acionamento.estaProximo;
-  console.log('dados', acionamento);
- // await acionamentoService.acionarDispositivo(acionamento);
+  await acionamentoService.acionarDispositivo(acionamento);
 }
 </script>
 
@@ -102,6 +106,7 @@ async function handleDispositivoEstaProximo(acionamento: AcionamentoType) {
         <BotoaComando
           :key="dispositivo.id" :dispositivo="dispositivo" :reserva-id="store.reserva?.id!"
           :coordenada-hospede="coordenadaHospede!"
+          @on-atualizacao-proximidade="handleAtualizarProximidade"
           @on-dispositivo-proximo="handleDispositivoEstaProximo"
           />
       </div>

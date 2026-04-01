@@ -7,7 +7,7 @@ import type CoordenadaModel from '@/models/coordenadaModel';
 
 const distanciaDispositivoHospedagem = ref(0);
 const dispositivoEstaProximo = ref(false);
-const emit = defineEmits(['onDispositivoProximo'])
+const emit = defineEmits(['onDispositivoProximo', 'onAtualizacaoProximidade'])
 
 const props = defineProps<{
   dispositivo: DispositivoModel,
@@ -19,20 +19,23 @@ onMounted(() => {
   checkTriggerDispositivoProximo(props.dispositivo);
 })
 
-function checkTriggerDispositivoProximo(dispositivo:DispositivoModel) {
+function checkTriggerDispositivoProximo(dispositivo: DispositivoModel) {
   const { condominioId, id: dispositivoId, token: tokenDispositivo } = dispositivo;
-   const estaProximo = estaProximoDispositivo(dispositivo);
+  const estaProximo = estaProximoDispositivo(dispositivo);
+  emit('onAtualizacaoProximidade', estaProximo)
+  if (!estaProximo) return;
 
-   if(!estaProximo) return;
-
-  emit('onDispositivoProximo', {
+  const obj = {
     condominioId,
     dispositivoId,
     reservaId: props.reservaId,
     tokenDispositivo,
     estaProximo,
-    nomeDispositivo:dispositivo.nome
-  })
+    nomeDispositivo: dispositivo.nome
+  };
+
+
+  emit('onDispositivoProximo', obj)
 }
 async function handleClickBtnDispositivo(dispositivo: DispositivoModel) {
 
@@ -52,8 +55,8 @@ function estaProximoDispositivo(dispositivo: DispositivoModel) {
     distanciaDispositivoHospedagem.value = distancia;
     dispositivoEstaProximo.value = (distancia <= 100) // pegar o valor do 100 do dispositivo
   }
-console.log('prox', dispositivoEstaProximo.value);
-return dispositivoEstaProximo.value;
+  console.log('prox', dispositivoEstaProximo.value);
+  return dispositivoEstaProximo.value;
 
 }
 
@@ -75,9 +78,7 @@ function obterIconeBotao(nome: string): string {
 </script>
 <template>
   <div>
-    <button class="btn btn-veiculo"
-    type="button"
-      v-if="dispositivo.permiteAcionamentoRemoto && dispositivoEstaProximo"
+    <button class="btn btn-veiculo" type="button" v-if="dispositivo.permiteAcionamentoRemoto && dispositivoEstaProximo"
       @click="() => handleClickBtnDispositivo(dispositivo)" :label="dispositivo.nome"
       :disabled="!estaProximoDispositivo(dispositivo)">
       {{ obterIconeBotao(props.dispositivo.nome) }} ABRIR {{ props.dispositivo.nome.toUpperCase() }}
