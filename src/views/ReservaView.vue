@@ -21,6 +21,7 @@ async function buscarReservaAsync(reservaId: string) {
   const result = await reservaService.obterReservaAsync(reservaId);
 
   if (!result.sucesso) {
+    if(result.erros)
     alert(result.erros.join('\n'));
     return
   }
